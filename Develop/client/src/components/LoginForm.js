@@ -5,7 +5,7 @@ import { useMutation } from '@apollo/client';
 
 // import { loginUser } from '../utils/API'; // redundant code
 import { QUERY_USERS, QUERY_SINGLE_USER } from '../utils/queries';
-import { loginUser } from '../utils/API';
+import  {LOGIN_USER} from '../utils/mutations'
 import Auth from '../utils/auth';
 
 const LoginForm = () => {
@@ -18,31 +18,62 @@ const LoginForm = () => {
     setUserFormData({ ...userFormData, [name]: value });
   };
 
+  // const handleFormSubmit = async (event) => {
+  //   event.preventDefault();
+
+  //   // check if form has everything (as per react-bootstrap docs)
+  //   const form = event.currentTarget;
+  //   if (form.checkValidity() === false) {
+  //     event.preventDefault();
+  //     event.stopPropagation();
+  //   }
+
+  //   try {
+  //     const response = await loginUser(userFormData);
+
+  //     if (!response.ok) {
+  //       throw new Error('something went wrong!');
+  //     }
+
+  //     const { token, user } = await response.json();
+  //     console.log(user);
+  //     Auth.login(token);
+  //   } catch (err) {
+  //     console.error(err);
+  //     setShowAlert(true);
+  //   }
+
+    // setUserFormData({
+    //   username: '',
+    //   email: '',
+    //   password: '',
+    // });
+  // };
+  // const [formState, setFormState] = useState({ email: '', password: '' });
+  const [login, { error, data }] = useMutation(LOGIN_USER);
+
+  // // update state based on form input changes
+  // const handleChange = (event) => {
+  //   const { name, value } = event.target;
+
+    
+  // };
+
+  // submit form
   const handleFormSubmit = async (event) => {
     event.preventDefault();
-
-    // check if form has everything (as per react-bootstrap docs)
-    const form = event.currentTarget;
-    if (form.checkValidity() === false) {
-      event.preventDefault();
-      event.stopPropagation();
-    }
-
+    console.log(userFormData);
     try {
-      const response = await loginUser(userFormData);
+      const { data } = await login({
+        variables: { ...userFormData },
+      });
 
-      if (!response.ok) {
-        throw new Error('something went wrong!');
-      }
-
-      const { token, user } = await response.json();
-      console.log(user);
-      Auth.login(token);
-    } catch (err) {
-      console.error(err);
-      setShowAlert(true);
+      Auth.login(data.login.token);
+    } catch (e) {
+      console.error(e);
     }
 
+    // clear form values
     setUserFormData({
       username: '',
       email: '',

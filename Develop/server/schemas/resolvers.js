@@ -2,20 +2,40 @@ const { Book, User } = require('../models');
 
 const resolvers = {
 Query: {
-    user: async () => {
+    users: async () => {
         return User.find({});
     },
 
-    book: async (_, { bookId}) => {
-        return Book.findOne({ _id: bookId });
-    },
+    // books: async (_, { bookId}) => {
+    //     return Book.findOne({ _id: bookId });
+    // },
     
 },
 
 Mutation: {
-    createUser: async (_, args ) => {
-        return User.create( args ), {new:true};
-    },
+
+    createUser: async (parent, { username, email, password }) => {
+        const user = await User.create({ username, email, password });
+        const token = signToken(user);
+        return { token, user };
+      },
+      login: async (parent, { email, password }) => {
+        const user = await User.findOne({ email });
+  
+        if (!user) {
+          throw new AuthenticationError('No user found with this email address');
+        }
+  
+        const correctPw = await user.isCorrectPassword(password);
+  
+        if (!correctPw) {
+          throw new AuthenticationError('Incorrect credentials');
+        }
+  
+        const token = signToken(user);
+  
+        return { token, user };
+      },
 },
 };
 
