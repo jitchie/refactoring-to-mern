@@ -1,15 +1,17 @@
 const express = require('express');
 const { ApolloServer } = require('apollo-server-express');
-// const path = require('path'); //remove path as appllo server will do the lifting
+const path = require('path'); 
 const { typeDefs, resolvers } = require('./schemas');
+const { authMiddleWare } = require('./utils/auth');
 const db = require('./config/connection');
 // const routes = require('./routes'); // express path isnt required
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+var PORT = process.env.PORT || 3001;
 const server = new ApolloServer({
   typeDefs,
-  resolvers
+  resolvers,
+  context: authMiddleWare
 })
 
 server.applyMiddleware({app});
