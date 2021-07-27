@@ -4,7 +4,7 @@ const path = require('path');
 const { typeDefs, resolvers } = require('./schemas');
 const { authMiddleWare } = require('./utils/auth');
 const db = require('./config/connection');
-// const routes = require('./routes'); // express path isnt required
+
 
 const app = express();
 var PORT = process.env.PORT || 3001;
@@ -23,7 +23,7 @@ if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../client/build')));
 }
 
-// app.use(routes); //no longer required.
+
 
 db.once('open', () => {
   app.listen(PORT, () => console.log(`🌍 Now listening on localhost:${PORT}`));
